@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Coach – SportClub</title>
+  <link rel="stylesheet" href="CSS/styles.css">
+  <link rel="icon" href="img/logo.jpg" type="image/png">
+  <style>
+    body.dashboard {
+      background-color: #f0f4f3;
+      margin: 0;
+      font-family: 'Nunito', sans-serif;
+    }
+
+    .dash-header {
+      background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+      padding: 12px 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+
+    .dash-header img {
+      height: 48px;
+    }
+
+    .dash-nav {
+      background: white;
+      padding: 0 5%;
+      display: flex;
+      gap: 25px;
+      border-bottom: 2px solid #e0e7e1;
+    }
+
+    .dash-nav a {
+      padding: 18px 5px;
+      text-decoration: none;
+      color: #666;
+      font-weight: 800;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 4px solid transparent;
+      transition: all 0.3s;
+    }
+
+    .dash-nav a.active, .dash-nav a:hover {
+      color: #2e7d32;
+      border-bottom-color: #cddc39;
+    }
+
+    .dash-main {
+      padding: 40px 5%;
+      max-width: 1250px;
+      margin: 0 auto;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 25px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.04);
+      border: 1px solid rgba(0,0,0,0.02);
+      transition: transform 0.3s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-8px);
+    }
+
+    .stat-icon {
+      width: 60px;
+      height: 60px;
+      background: #e8f5e9;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+    }
+
+    .stat-info span {
+      display: block;
+      font-size: 0.8rem;
+      color: #888;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .stat-info strong {
+      font-size: 1.6rem;
+      color: #1b5e20;
+    }
+
+    .dashboard-content {
+      display: grid;
+      grid-template-columns: 1.6fr 1fr;
+      gap: 30px;
+    }
+
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+      margin-bottom: 30px;
+    }
+
+    .card h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.7rem;
+      margin-bottom: 25px;
+      color: #1b5e20;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 3px solid #f0f4f3;
+      padding-bottom: 12px;
+    }
+
+    .dash-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .dash-table th {
+      text-align: left;
+      font-size: 0.85rem;
+      color: #999;
+      padding: 12px;
+      text-transform: uppercase;
+    }
+
+    .dash-table td {
+      padding: 18px 12px;
+      border-top: 1px solid #f5f5f5;
+    }
+
+    .badge-time {
+      background: #e8f5e9;
+      color: #2e7d32;
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 0.85rem;
+    }
+
+    .user-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      background: #2e7d32;
+      color: white;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+    }
+
+    .btn-action {
+      background: #2e7d32;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn-action:hover {
+      background: #cddc39;
+      color: #1b5e20;
+    }
+
+    .btn-edit-coach {
+      background: #cddc39;
+      color: #1b5e20;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 800;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 3000;
+      left: 0; top: 0; width: 100%; height: 100%;
+      background: rgba(27, 94, 32, 0.7);
+      backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 40px;
+      border-radius: 25px;
+      width: 90%;
+      max-width: 450px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+    }
+
+    .modal-content input {
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0 20px 0;
+      border: 2px solid #eee;
+      border-radius: 12px;
+      font-family: inherit;
+    }
+
+    @media (max-width: 900px) {
+      .dashboard-content { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body class="dashboard">
+
+  <header class="dash-header">
+    <img src="logo_empresa_letra_v1.png" alt="SportClub">
+    <div style="display: flex; gap: 20px; align-items: center;">
+      <button class="btn-edit-coach" onclick="openModal()">EDITAR PERFIL</button>
+      <span id="coach-name-header" style="color: white; font-weight: 700;">Coach Carlos R.</span>
+      <a href="index.html" style="text-decoration: none; background: rgba(255,255,255,0.2); color: white; padding: 6px 15px; border-radius: 8px; font-size: 0.8rem; font-weight: 700;">SALIR</a>
+    </div>
+  </header>
+
+  <nav class="dash-nav">
+    <a href="#" class="active">Inicio</a>
+    <a href="#alumnos">Alumnos</a>
+    <a href="#clases">Clases</a>
+  </nav>
+
+  <main class="dash-main">
+    
+    <div style="margin-bottom: 40px;">
+      <h2 style="color: #1b5e20; font-size: 2.2rem; margin: 0;">Panel de Gestión 🌿</h2>
+      <p style="color: #666; font-size: 1.1rem;">Bienvenido de nuevo, <span id="coach-name-welcome">Carlos</span>.</p>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-info"><span>Mis Alumnos</span><strong>32</strong></div>
+      </div>
+      <div class="stat-icon" style="background: white; border: none; width: auto; height: auto;">
+         <div class="stat-card">
+           <div class="stat-icon">🕒</div>
+           <div class="stat-info"><span>Horas Hoy</span><strong>6.5h</strong></div>
+         </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⭐</div>
+        <div class="stat-info"><span>Rating</span><strong>4.9/5</strong></div>
+      </div>
+    </div>
+
+    <div class="dashboard-content">
+      
+      <div class="left-col">
+        <div class="card" id="alumnos">
+          <h3>👥 Gestión de Alumnos</h3>
+          <table class="dash-table">
+            <thead>
+              <tr>
+                <th>Alumno</th>
+                <th>Correo</th>
+                <th>Plan</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><div class="user-row"><div class="user-avatar">JP</div><strong>Juan Pérez</strong></div></td>
+                <td>juan.perez@email.com</td>
+                <td><span class="badge-time">Trimestral</span></td>
+              </tr>
+              <tr>
+                <td><div class="user-row"><div class="user-avatar" style="background:#1565c0">MG</div><strong>María García</strong></div></td>
+                <td>m.garcia@email.com</td>
+                <td><span class="badge-time">Mensual</span></td>
+              </tr>
+              <tr>
+                <td><div class="user-row"><div class="user-avatar" style="background:#e65100">RL</div><strong>Ricardo Luna</strong></div></td>
+                <td>rluna@email.com</td>
+                <td><span class="badge-time">Anual</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card" id="clases">
+          <h3>📅 Clases Asignadas</h3>
+          <table class="dash-table">
+            <thead>
+              <tr>
+                <th>Clase</th>
+                <th>Día y Hora</th>
+                <th>Ubicación</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong style="color: #1b5e20;">Entrenamiento Funcional</strong></td>
+                <td>Martes - 19:00 hrs</td>
+                <td><span class="badge-time">Sala A</span></td>
+              </tr>
+              <tr>
+                <td><strong style="color: #1b5e20;">CrossFit Avanzado</strong></td>
+                <td>Jueves - 10:00 hrs</td>
+                <td><span class="badge-time">Box Central</span></td>
+              </tr>
+              <tr>
+                <td><strong style="color: #1b5e20;">Spinning Pro</strong></td>
+                <td>Viernes - 18:00 hrs</td>
+                <td><span class="badge-time">Ciclo Room</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card" id="horario-semanal">
+          <h3>🕒 Horario de Disponibilidad Laboral</h3>
+          <table class="dash-table">
+            <thead>
+              <tr>
+                <th>Día</th>
+                <th>Rango de Horario</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Lunes</strong></td>
+                <td>08:00 - 14:00 / 16:00 - 20:00</td>
+              </tr>
+              <tr>
+                <td><strong>Martes</strong></td>
+                <td>09:00 - 13:00 / 17:00 - 21:00</td>
+              </tr>
+              <tr>
+                <td><strong>Miércoles</strong></td>
+                <td>08:00 - 14:00</td>
+              </tr>
+              <tr>
+                <td><strong>Jueves</strong></td>
+                <td>09:00 - 13:00 / 17:00 - 21:00</td>
+              </tr>
+              <tr>
+                <td><strong>Viernes</strong></td>
+                <td>08:00 - 15:00</td>
+              </tr>
+              <tr>
+                <td><strong>Sábado</strong></td>
+                <td>09:00 - 12:00 (Solo mañana)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="right-col">
+        <div class="card">
+          <h3>👤 Datos del Instructor</h3>
+          <div style="margin-bottom: 20px;">
+            <span style="font-size: 0.7rem; font-weight: 800; color: #aaa; text-transform: uppercase;">Nombre</span>
+            <div id="display-coach-name" style="font-weight: 700; color: #1b5e20; font-size: 1.1rem;">Carlos Rodríguez</div>
+          </div>
+          <div style="margin-bottom: 20px;">
+            <span style="font-size: 0.7rem; font-weight: 800; color: #aaa; text-transform: uppercase;">Correo</span>
+            <div id="display-coach-email" style="font-weight: 700; color: #1b5e20; font-size: 1.1rem;">carlosr@coach.com</div>
+          </div>
+          <div>
+            <span style="font-size: 0.7rem; font-weight: 800; color: #aaa; text-transform: uppercase;">Especialidad</span>
+            <div id="display-coach-spec" style="font-weight: 700; color: #1b5e20; font-size: 1.1rem;">HIIT / Alto Rendimiento</div>
+          </div>
+        </div>
+
+        <div class="card" style="background: #1b5e20; color: white;">
+          <h3 style="color: #cddc39; border-color: rgba(255,255,255,0.1);">📝 Recordatorio</h3>
+          <p style="font-size: 0.95rem; line-height: 1.6; opacity: 0.9;">No olvides revisar las fichas técnicas de los nuevos alumnos antes de la clase de Funcional del martes.</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <h3 style="font-family: 'Bebas Neue'; color: #1b5e20; margin-top: 0; font-size: 1.8rem;">Editar Perfil Coach</h3>
+      <label style="font-size: 0.8rem; font-weight: 800; color: #666;">Nombre Completo</label>
+      <input type="text" id="input-coach-name" value="Carlos Rodríguez">
+      <label style="font-size: 0.8rem; font-weight: 800; color: #666;">Correo Electrónico</label>
+      <input type="email" id="input-coach-email" value="carlosr@coach.com">
+      <label style="font-size: 0.8rem; font-weight: 800; color: #666;">Especialidad</label>
+      <input type="text" id="input-coach-spec" value="HIIT / Alto Rendimiento">
+      <div style="display: flex; gap: 15px;">
+        <button class="btn-action" style="flex: 1;" onclick="saveCoachChanges()">Guardar</button>
+        <button class="btn-action" style="flex: 1; background: #f5f5f5; color: #666;" onclick="closeModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openModal() {
+      document.getElementById('editModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('editModal').style.display = 'none';
+    }
+
+    function saveCoachChanges() {
+      const name = document.getElementById('input-coach-name').value;
+      const email = document.getElementById('input-coach-email').value;
+      const spec = document.getElementById('input-coach-spec').value;
+
+      document.getElementById('coach-name-header').innerText = "Coach " + name.split(' ')[0] + " " + (name.split(' ')[1] ? name.split(' ')[1][0] + "." : "");
+      document.getElementById('coach-name-welcome').innerText = name.split(' ')[0];
+      document.getElementById('display-coach-name').innerText = name;
+      document.getElementById('display-coach-email').innerText = email;
+      document.getElementById('display-coach-spec').innerText = spec;
+
+      closeModal();
+    }
+
+    window.onclick = function(event) {
+      if (event.target == document.getElementById('editModal')) {
+        closeModal();
+      }
+    }
+  </script>
+
+</body>
+</html>
