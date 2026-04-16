@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Control Interactivo – SportClub</title>
+  <link rel="stylesheet" href="CSS/styles.css">
+  <link rel="icon" href="img/logo.jpg" type="image/png">
+  <style>
+    :root {
+      --purple-dark: #2b004e;
+      --yellow: #ffcc00;
+      --gray-mid: #e0e0e0;
+      --text-muted: #666;
+      --success: #2ecc71;
+    }
+
+    body.dashboard {
+      background-color: #f0f2f5;
+      margin: 0;
+      font-family: 'Nunito', sans-serif;
+    }
+
+    .dash-header {
+      background-color: var(--purple-dark);
+      padding: 12px 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .dash-header img { height: 48px; }
+
+    .dash-nav {
+      background: white;
+      padding: 0 5%;
+      display: flex;
+      gap: 25px;
+      border-bottom: 2px solid var(--gray-mid);
+    }
+
+    .dash-nav a {
+      padding: 18px 5px;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-weight: 800;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 4px solid transparent;
+      transition: all 0.3s;
+    }
+
+    .dash-nav a.active, .dash-nav a:hover {
+      color: var(--purple-dark);
+      border-bottom-color: var(--yellow);
+    }
+
+    .dash-main {
+      padding: 40px 5%;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    
+    .info-cards-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .info-card-box {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      border: 1px solid #eee;
+    }
+
+    .info-card-box .icon {
+      font-size: 1.5rem;
+      width: 45px;
+      height: 45px;
+      background: #f8f9fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+    }
+
+    .info-card-box .data span {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: #999;
+      text-transform: uppercase;
+    }
+
+    .info-card-box .data strong {
+      display: block;
+      font-size: 1.4rem;
+      color: var(--purple-dark);
+      font-family: 'Bebas Neue', sans-serif;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+      position: relative;
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .stat-label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #888;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 2.2rem;
+      color: var(--purple-dark);
+      font-family: 'Bebas Neue', sans-serif;
+      display: block;
+    }
+
+    .stat-progress-bar {
+      height: 6px;
+      background: #eee;
+      border-radius: 10px;
+      margin: 15px 0;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--purple-dark);
+    }
+
+    .dashboard-content {
+      display: grid;
+      grid-template-columns: 2fr 1.2fr;
+      gap: 30px;
+    }
+
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+      margin-bottom: 30px;
+      border: 1px solid #eee;
+    }
+
+    .card h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      color: var(--purple-dark);
+      margin-top: 0;
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+    }
+
+    .search-container {
+      display: flex;
+      background: #f4f4f4;
+      border-radius: 12px;
+      padding: 5px 15px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .search-container input {
+      background: transparent;
+      border: none;
+      padding: 12px;
+      flex: 1;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .dash-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .dash-table th {
+      text-align: left;
+      padding: 12px;
+      color: #999;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+    }
+
+    .dash-table td {
+      padding: 15px 12px;
+      border-top: 1px solid #f9f9f9;
+    }
+
+    .report-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      background: #fcfcfc;
+      border: 1px solid #f0f0f0;
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+
+    .btn-download {
+      background: var(--purple-dark);
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: 0.3s;
+    }
+
+    .btn-download:hover { background: var(--yellow); color: var(--purple-dark); }
+
+    .btn-edit {
+      background: #eee;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .config-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 15px;
+      background: #f9f9f9;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .config-item:hover { background: #f0f0f0; }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0; top: 0; width: 100%; height: 100%;
+      background: rgba(43, 0, 78, 0.8);
+      align-items: center; justify-content: center;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 35px;
+      border-radius: 25px;
+      width: 90%; max-width: 400px;
+    }
+
+    .modal-content input {
+      width: 100%; padding: 12px; margin: 10px 0 20px 0;
+      border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box;
+    }
+
+    @media (max-width: 1000px) {
+      .dashboard-content { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body class="dashboard">
+
+  <header class="dash-header">
+    <img src="logo_empresa_letra_v1.png" alt="SportClub">
+    <div style="display: flex; gap: 20px; align-items: center;">
+      <button onclick="openAdminModal()" style="background: var(--yellow); border: none; padding: 8px 16px; border-radius: 8px; font-weight: 800; cursor: pointer;">EDITAR PERFIL</button>
+      <div style="text-align: right;">
+        <div id="display-admin-name" style="color: white; font-weight: 800; font-size: 0.9rem;">ADMIN CENTRAL</div>
+        <small id="display-admin-role" style="color: var(--yellow); font-size: 0.7rem;">Superusuario</small>
+      </div>
+      <a href="index.html" style="text-decoration: none; background: #ff3b30; color: white; padding: 6px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: 800;">CERRAR SESIÓN</a>
+    </div>
+  </header>
+
+  <nav class="dash-nav">
+    <a href="#" class="active">Inicio</a>
+    <a href="#gestion-usuarios">Usuarios</a>
+    <a href="#reportes">Estadísticas</a>
+    <a href="#config-section">Configuración</a>
+  </nav>
+
+  <main class="dash-main">
+
+    <div class="info-cards-row">
+      <div class="info-card-box">
+        <div class="icon">👥</div>
+        <div class="data">
+          <span>Usuarios activos actualmente</span>
+          <strong>892</strong>
+        </div>
+      </div>
+      <div class="info-card-box">
+        <div class="icon">📅</div>
+        <div class="data">
+          <span>Clases el día de hoy</span>
+          <strong>24</strong>
+        </div>
+      </div>
+    </div>
+    
+    <div class="stat-grid">
+      <div class="stat-card">
+        <span class="stat-label">Total de usuarios registrados</span>
+        <span class="stat-value">1.458</span>
+        <div class="stat-progress-bar">
+          <div class="progress-fill" style="width: 100%;"></div>
+        </div>
+        <small style="color: var(--success); font-weight: 700;">Base de datos completa</small>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Meta Mensual</span>
+        <span class="stat-value">$28.4M / $35M</span>
+        <div class="stat-progress-bar">
+          <div class="progress-fill" style="width: 78%; background: var(--success);"></div>
+        </div>
+        <small style="color: #888;">Faltan $6.6M para el objetivo</small>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Clases Totales</span>
+        <span class="stat-value">156</span>
+        <div class="stat-progress-bar">
+          <div class="progress-fill" style="width: 100%; background: var(--yellow);"></div>
+        </div>
+        <small style="color: #888;">Programadas este mes</small>
+      </div>
+    </div>
+
+    <div class="dashboard-content">
+      
+      <div class="left-col">
+        <div class="card" id="gestion-usuarios">
+          <h3>Gestión de Usuarios</h3>
+          <div class="search-container">
+            <span>🔍</span>
+            <input type="text" placeholder="Buscar por nombre, email...">
+          </div>
+          <table class="dash-table">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Juan Pérez</strong></td>
+                <td>juan@sportclub.com</td>
+                <td><span style="color: #1565c0; font-weight: 800; font-size: 0.7rem;">SOCIO</span></td>
+                <td><button class="btn-edit" onclick="openEditModal('Juan Pérez', 'juan@sportclub.com')">Editar</button></td>
+              </tr>
+              <tr>
+                <td><strong>María García</strong></td>
+                <td>m.garcia@sportclub.com</td>
+                <td><span style="color: #2e7d32; font-weight: 800; font-size: 0.7rem;">COACH</span></td>
+                <td><button class="btn-edit" onclick="openEditModal('María García', 'm.garcia@sportclub.com')">Editar</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card" id="config-section">
+          <h3>⚙️ Ajustes de Configuración</h3>
+          <div class="config-item">
+            <span style="font-size: 1.2rem;">🌐</span>
+            <div style="flex:1">
+              <div style="font-weight: 800;">General</div>
+              <small style="color: #888;">Idioma, zona horaria y visibilidad.</small>
+            </div>
+            <span>❯</span>
+          </div>
+          <div class="config-item">
+            <span style="font-size: 1.2rem;">🔒</span>
+            <div style="flex:1">
+              <div style="font-weight: 800;">Seguridad</div>
+              <small style="color: #888;">Contraseñas, roles y permisos de admin.</small>
+            </div>
+            <span>❯</span>
+          </div>
+          <div class="config-item">
+            <span style="font-size: 1.2rem;">🎨</span>
+            <div style="flex:1">
+              <div style="font-weight: 800;">Apariencia</div>
+              <small style="color: #888;">Colores, logo y temas del dashboard.</small>
+            </div>
+            <span>❯</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-col">
+        <div class="card" id="reportes">
+          <h3>Reportes Generales</h3>
+          <div class="report-row">
+            <div>
+              <div style="font-weight: 800; color: var(--purple-dark);">Abril 2024</div>
+              <small style="color: #888;">Informe Mensual</small>
+            </div>
+            <button class="btn-download">Descargar</button>
+          </div>
+          <div class="report-row">
+            <div>
+              <div style="font-weight: 800; color: var(--purple-dark);">Marzo 2024</div>
+              <small style="color: #888;">Informe Mensual</small>
+            </div>
+            <button class="btn-download">Descargar</button>
+          </div>
+          <div class="report-row">
+            <div>
+              <div style="font-weight: 800; color: var(--purple-dark);">Febrero 2024</div>
+              <small style="color: #888;">Informe Mensual</small>
+            </div>
+            <button class="btn-download">Descargar</button>
+          </div>
+        </div>
+
+        <div class="card" style="background: var(--purple-dark); color: white;">
+          <h3 style="color: var(--yellow);">Mantenimiento</h3>
+          <p style="font-size: 0.85rem; opacity: 0.8;">Próxima actualización de base de datos:</p>
+          <div style="font-weight: 800; font-size: 1.1rem;">Domingo, 02:00 AM</div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="adminModal" class="modal">
+    <div class="modal-content">
+      <h3 style="font-family: 'Bebas Neue'; color: var(--purple-dark); margin-top: 0;">Editar Admin</h3>
+      <label style="font-size: 0.8rem; font-weight: 800;">Nombre</label>
+      <input type="text" id="input-admin-name" value="ADMIN CENTRAL">
+      <label style="font-size: 0.8rem; font-weight: 800;">Rango</label>
+      <input type="text" id="input-admin-role" value="Superusuario">
+      <button class="btn-download" style="width: 100%;" onclick="saveAdminChanges()">Guardar Cambios</button>
+      <button class="btn-download" style="width: 100%; background: #eee; color: #333; margin-top: 10px;" onclick="closeAdminModal()">Cancelar</button>
+    </div>
+  </div>
+
+  <div id="editUserModal" class="modal">
+    <div class="modal-content">
+      <h3 style="font-family: 'Bebas Neue'; color: var(--purple-dark); margin-top: 0;">Editar Usuario</h3>
+      <label style="font-size: 0.8rem; font-weight: 800;">Nombre</label>
+      <input type="text" id="edit-user-name">
+      <label style="font-size: 0.8rem; font-weight: 800;">Email</label>
+      <input type="email" id="edit-user-email">
+      <button class="btn-download" style="width: 100%;" onclick="closeEditModal()">Actualizar</button>
+      <button class="btn-download" style="width: 100%; background: #eee; color: #333; margin-top: 10px;" onclick="closeEditModal()">Cerrar</button>
+    </div>
+  </div>
+
+  <script>
+    function openAdminModal() { document.getElementById('adminModal').style.display = 'flex'; }
+    function closeAdminModal() { document.getElementById('adminModal').style.display = 'none'; }
+    
+    function saveAdminChanges() {
+      document.getElementById('display-admin-name').innerText = document.getElementById('input-admin-name').value;
+      document.getElementById('display-admin-role').innerText = document.getElementById('input-admin-role').value;
+      closeAdminModal();
+    }
+
+    function openEditModal(name, email) {
+      document.getElementById('edit-user-name').value = name;
+      document.getElementById('edit-user-email').value = email;
+      document.getElementById('editUserModal').style.display = 'flex';
+    }
+
+    function closeEditModal() { document.getElementById('editUserModal').style.display = 'none'; }
+
+    window.onclick = function(e) {
+      if(e.target.className === 'modal') { closeAdminModal(); closeEditModal(); }
+    }
+  </script>
+</body>
+</html>
